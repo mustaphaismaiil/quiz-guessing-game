@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="quiz-container">
+            <!-- Start Screen -->
+            <div id="startScreen" class="screen active">
+                <h1>🎯 Quiz Challenge</h1>
+                <p>Test your knowledge with this fun quiz!</p>
+                <button id="startBtn" class="btn btn-primary">Start Quiz</button>
+            </div>
+
+            <!-- Quiz Screen -->
+            <div id="quizScreen" class="screen">
+                <div class="quiz-header">
+                    <div class="progress">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    <div class="quiz-info">
+                        <span id="currentQuestion">1/5</span>
+                        <span id="score">Score: 0</span>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <h2 id="questionText"></h2>
+                    <div id="answersContainer" class="answers-container"></div>
+                </div>
+
+                <button id="nextBtn" class="btn btn-primary" style="display: none;">Next Question</button>
+            </div>
+
+            <!-- Results Screen -->
+            <div id="resultsScreen" class="screen">
+                <h1>Quiz Complete! 🎉</h1>
+                <div class="results-card">
+                    <div class="final-score">
+                        <span id="finalScore">0</span>/<span id="totalQuestions">5</span>
+                    </div>
+                    <div class="score-message" id="scoreMessage"></div>
+                    <div class="results-details" id="resultsDetails"></div>
+                </div>
+                <button id="retryBtn" class="btn btn-primary">Try Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
