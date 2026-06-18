@@ -1,56 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz App</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive Quiz Game</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div class="container">
-        <div class="quiz-container">
-            <!-- Start Screen -->
-            <div id="startScreen" class="screen active">
-                <h1>🎯 Quiz Challenge</h1>
-                <p>Test your knowledge with this fun quiz!</p>
-                <button id="startBtn" class="btn btn-primary">Start Quiz</button>
-            </div>
+  <main class="quiz-app">
+    <header>
+      <h1>Quiz Quest</h1>
+      <p>Test your knowledge with a fun interactive quiz that uses functions, arrays, objects, loops, and conditional logic.</p>
+    </header>
 
-            <!-- Quiz Screen -->
-            <div id="quizScreen" class="screen">
-                <div class="quiz-header">
-                    <div class="progress">
-                        <div class="progress-bar" id="progressBar"></div>
-                    </div>
-                    <div class="quiz-info">
-                        <span id="currentQuestion">1/5</span>
-                        <span id="score">Score: 0</span>
-                    </div>
-                </div>
+    <section class="quiz-card hidden" id="quiz-card">
+      <div class="meta">
+        <span id="question-number">Question 1</span>
+        <span id="score">Score: 0</span>
+      </div>
+      <h2 id="question-text"></h2>
+      <div id="answers" class="answers"></div>
+      <button id="next-btn" class="primary-btn">Next Question</button>
+    </section>
 
-                <div class="question-container">
-                    <h2 id="questionText"></h2>
-                    <div id="answersContainer" class="answers-container"></div>
-                </div>
+    <section class="start-card" id="start-card">
+      <p>Ready to begin? Click the button to start the quiz and see how many you can get right.</p>
+      <button id="start-btn" class="primary-btn">Start Quiz</button>
+    </section>
 
-                <button id="nextBtn" class="btn btn-primary" style="display: none;">Next Question</button>
-            </div>
+    <section class="result-card hidden" id="result-card">
+      <h2>Quiz Complete!</h2>
+      <p id="result-text"></p>
+      <button id="restart-btn" class="primary-btn">Try Again</button>
+    </section>
+  </main>
 
-            <!-- Results Screen -->
-            <div id="resultsScreen" class="screen">
-                <h1>Quiz Complete! 🎉</h1>
-                <div class="results-card">
-                    <div class="final-score">
-                        <span id="finalScore">0</span>/<span id="totalQuestions">5</span>
-                    </div>
-                    <div class="score-message" id="scoreMessage"></div>
-                    <div class="results-details" id="resultsDetails"></div>
-                </div>
-                <button id="retryBtn" class="btn btn-primary">Try Again</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

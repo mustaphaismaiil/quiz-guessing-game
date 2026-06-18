@@ -1,282 +1,138 @@
-// Quiz Questions Database
-const quizQuestions = [
-    {
-        id: 1,
-        question: "What is the capital of France?",
-        type: "multiple-choice",
-        options: ["London", "Berlin", "Paris", "Madrid"],
-        correctAnswer: "Paris",
-        points: 10
-    },
-    {
-        id: 2,
-        question: "Which planet is known as the Red Planet?",
-        type: "multiple-choice",
-        options: ["Venus", "Mars", "Jupiter", "Saturn"],
-        correctAnswer: "Mars",
-        points: 10
-    },
-    {
-        id: 3,
-        question: "What is the largest ocean on Earth?",
-        type: "multiple-choice",
-        options: ["Atlantic Ocean", "Indian Ocean", "Arctic Ocean", "Pacific Ocean"],
-        correctAnswer: "Pacific Ocean",
-        points: 10
-    },
-    {
-        id: 4,
-        question: "In what year did the Titanic sink?",
-        type: "text-input",
-        correctAnswer: "1912",
-        points: 15,
-        hint: "Enter a 4-digit year"
-    },
-    {
-        id: 5,
-        question: "How many continents are there?",
-        type: "multiple-choice",
-        options: ["5", "6", "7", "8"],
-        correctAnswer: "7",
-        points: 10
-    }
+const questions = [
+  {
+    question: 'Which JavaScript structure stores multiple values and can be looped over?',
+    choices: ['Object', 'Array', 'Function', 'Variable'],
+    answer: 'Array',
+  },
+  {
+    question: 'Which statement checks a condition and runs code only when it is true?',
+    choices: ['for loop', 'if statement', 'array method', 'object key'],
+    answer: 'if statement',
+  },
+  {
+    question: 'What is an example of an object property in JavaScript?',
+    choices: ['const score = 0;', 'score: 0', 'score === 0', 'score()'],
+    answer: 'score: 0',
+  },
+  {
+    question: 'Which loop runs when the condition is true and repeats until it becomes false?',
+    choices: ['do-while', 'switch', 'if', 'return'],
+    answer: 'do-while',
+  },
+  {
+    question: 'How does a function help make code reusable?',
+    choices: [
+      'It stores values in an object',
+      'It runs the same logic whenever it is called',
+      'It changes the page style automatically',
+      'It defines a new array type',
+    ],
+    answer: 'It runs the same logic whenever it is called',
+  },
 ];
 
-// Quiz State
+const startButton = document.getElementById('start-btn');
+const nextButton = document.getElementById('next-btn');
+const restartButton = document.getElementById('restart-btn');
+const quizCard = document.getElementById('quiz-card');
+const startCard = document.getElementById('start-card');
+const resultCard = document.getElementById('result-card');
+const questionText = document.getElementById('question-text');
+const questionNumber = document.getElementById('question-number');
+const scoreDisplay = document.getElementById('score');
+const answersContainer = document.getElementById('answers');
+const resultText = document.getElementById('result-text');
+
 let currentQuestionIndex = 0;
 let score = 0;
-let userAnswers = [];
+let selectedAnswer = null;
 
-// DOM Elements
-const startScreen = document.getElementById("startScreen");
-const quizScreen = document.getElementById("quizScreen");
-const resultsScreen = document.getElementById("resultsScreen");
+function getRandomQuestionOrder() {
+  const copy = [...questions];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
 
-const startBtn = document.getElementById("startBtn");
-const nextBtn = document.getElementById("nextBtn");
-const retryBtn = document.getElementById("retryBtn");
+let shuffledQuestions = getRandomQuestionOrder();
 
-const questionText = document.getElementById("questionText");
-const answersContainer = document.getElementById("answersContainer");
-const currentQuestionSpan = document.getElementById("currentQuestion");
-const scoreSpan = document.getElementById("score");
-const progressBar = document.getElementById("progressBar");
+function resetGame() {
+  currentQuestionIndex = 0;
+  score = 0;
+  selectedAnswer = null;
+  scoreDisplay.textContent = `Score: ${score}`;
+  shuffledQuestions = getRandomQuestionOrder();
+}
 
-const finalScoreSpan = document.getElementById("finalScore");
-const totalQuestionsSpan = document.getElementById("totalQuestions");
-const scoreMessageSpan = document.getElementById("scoreMessage");
-const resultsDetailsSpan = document.getElementById("resultsDetails");
-
-// Event Listeners
-startBtn.addEventListener("click", startQuiz);
-nextBtn.addEventListener("click", nextQuestion);
-retryBtn.addEventListener("click", restartQuiz);
-
-// Functions
 function startQuiz() {
-    currentQuestionIndex = 0;
-    score = 0;
-    userAnswers = [];
-    
-    startScreen.classList.remove("active");
-    quizScreen.classList.add("active");
-    
-    loadQuestion();
+  startCard.classList.add('hidden');
+  resultCard.classList.add('hidden');
+  quizCard.classList.remove('hidden');
+  resetGame();
+  showQuestion();
 }
 
-function loadQuestion() {
-    const question = quizQuestions[currentQuestionIndex];
-    
-    // Update header info
-    currentQuestionSpan.textContent = `${currentQuestionIndex + 1}/${quizQuestions.length}`;
-    scoreSpan.textContent = `Score: ${score}`;
-    
-    // Update progress bar
-    const progress = ((currentQuestionIndex + 1) / quizQuestions.length) * 100;
-    progressBar.style.width = progress + "%";
-    
-    // Load question text
-    questionText.textContent = question.question;
-    
-    // Clear previous answers
-    answersContainer.innerHTML = "";
-    nextBtn.style.display = "none";
-    
-    // Load answer options based on question type
-    if (question.type === "multiple-choice") {
-        loadMultipleChoice(question);
-    } else if (question.type === "text-input") {
-        loadTextInput(question);
+function showQuestion() {
+  const currentQuestion = shuffledQuestions[currentQuestionIndex];
+  questionNumber.textContent = `Question ${currentQuestionIndex + 1} of ${shuffledQuestions.length}`;
+  questionText.textContent = currentQuestion.question;
+  answersContainer.innerHTML = '';
+  selectedAnswer = null;
+  nextButton.disabled = true;
+
+  currentQuestion.choices.forEach((choice) => {
+    const button = document.createElement('button');
+    button.className = 'answer-btn';
+    button.type = 'button';
+    button.textContent = choice;
+    button.addEventListener('click', () => selectAnswer(button, currentQuestion.answer));
+    answersContainer.appendChild(button);
+  });
+}
+
+function selectAnswer(button, correctAnswer) {
+  if (selectedAnswer) {
+    return;
+  }
+
+  selectedAnswer = button.textContent;
+  const buttons = answersContainer.querySelectorAll('.answer-btn');
+
+  buttons.forEach((btn) => {
+    if (btn.textContent === correctAnswer) {
+      btn.classList.add('correct');
+    } else if (btn === button) {
+      btn.classList.add('wrong');
     }
+    btn.disabled = true;
+  });
+
+  if (selectedAnswer === correctAnswer) {
+    score += 1;
+    scoreDisplay.textContent = `Score: ${score}`;
+  }
+
+  nextButton.disabled = false;
 }
 
-function loadMultipleChoice(question) {
-    const optionLetters = ["A", "B", "C", "D"];
-    
-    question.options.forEach((option, index) => {
-        const label = document.createElement("label");
-        label.className = "answer-option";
-        
-        const radio = document.createElement("input");
-        radio.type = "radio";
-        radio.name = "answer";
-        radio.value = option;
-        radio.addEventListener("change", () => {
-            selectAnswer(option);
-        });
-        
-        label.appendChild(radio);
-        label.appendChild(document.createTextNode(`${optionLetters[index]}. ${option}`));
-        
-        answersContainer.appendChild(label);
-    });
+function showResult() {
+  quizCard.classList.add('hidden');
+  resultCard.classList.remove('hidden');
+  const percentage = Math.round((score / shuffledQuestions.length) * 100);
+  resultText.textContent = `You answered ${score} of ${shuffledQuestions.length} questions correctly (${percentage}%). Great job using real code concepts!`;
 }
 
-function loadTextInput(question) {
-    const inputContainer = document.createElement("div");
-    inputContainer.className = "answer-option";
-    
-    const input = document.createElement("input");
-    input.type = "text";
-    input.placeholder = question.hint || "Type your answer...";
-    input.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") {
-            selectAnswer(input.value.trim());
-        }
-    });
-    
-    const submitBtn = document.createElement("button");
-    submitBtn.className = "btn btn-primary";
-    submitBtn.textContent = "Submit";
-    submitBtn.style.padding = "8px 16px";
-    submitBtn.style.fontSize = "0.9em";
-    submitBtn.addEventListener("click", () => {
-        selectAnswer(input.value.trim());
-    });
-    
-    inputContainer.appendChild(input);
-    inputContainer.appendChild(submitBtn);
-    answersContainer.appendChild(inputContainer);
+function goToNextQuestion() {
+  currentQuestionIndex += 1;
+  if (currentQuestionIndex < shuffledQuestions.length) {
+    showQuestion();
+  } else {
+    showResult();
+  }
 }
 
-function selectAnswer(answer) {
-    const question = quizQuestions[currentQuestionIndex];
-    const isCorrect = normalizeAnswer(answer) === normalizeAnswer(question.correctAnswer);
-    
-    // Store user answer
-    userAnswers.push({
-        questionId: question.id,
-        question: question.question,
-        userAnswer: answer,
-        correctAnswer: question.correctAnswer,
-        isCorrect: isCorrect
-    });
-    
-    // Update score
-    if (isCorrect) {
-        score += question.points;
-        scoreSpan.textContent = `Score: ${score}`;
-    }
-    
-    // Disable all answer options
-    const allOptions = document.querySelectorAll(".answer-option");
-    allOptions.forEach(option => {
-        option.style.pointerEvents = "none";
-    });
-    
-    // Show correct/incorrect feedback
-    if (question.type === "multiple-choice") {
-        allOptions.forEach(option => {
-            const optionText = option.textContent.slice(3); // Remove letter
-            if (optionText.trim() === question.correctAnswer) {
-                option.classList.add("correct");
-            } else if (option.querySelector("input").checked && !isCorrect) {
-                option.classList.add("incorrect");
-            }
-        });
-    } else {
-        // Text input feedback
-        const inputs = document.querySelectorAll("input[type='text']");
-        inputs.forEach(input => {
-            if (isCorrect) {
-                input.parentElement.classList.add("correct");
-            } else {
-                input.parentElement.classList.add("incorrect");
-            }
-        });
-    }
-    
-    // Show next button
-    nextBtn.style.display = "block";
-}
-
-function normalizeAnswer(answer) {
-    return answer.toLowerCase().trim();
-}
-
-function nextQuestion() {
-    currentQuestionIndex++;
-    
-    if (currentQuestionIndex < quizQuestions.length) {
-        loadQuestion();
-    } else {
-        showResults();
-    }
-}
-
-function showResults() {
-    quizScreen.classList.remove("active");
-    resultsScreen.classList.add("active");
-    
-    // Calculate percentage
-    const maxScore = quizQuestions.reduce((sum, q) => sum + q.points, 0);
-    const percentage = Math.round((score / maxScore) * 100);
-    
-    // Update results
-    finalScoreSpan.textContent = score;
-    totalQuestionsSpan.textContent = maxScore;
-    
-    // Show appropriate message
-    let message = "";
-    if (percentage === 100) {
-        message = "Perfect! You're a genius! 🌟";
-    } else if (percentage >= 80) {
-        message = "Excellent work! Very impressive! 👏";
-    } else if (percentage >= 60) {
-        message = "Good job! Keep learning! 📚";
-    } else if (percentage >= 40) {
-        message = "Not bad! Try again to improve! 💪";
-    } else {
-        message = "Keep practicing! You'll do better next time! 🎯";
-    }
-    
-    scoreMessageSpan.textContent = message;
-    
-    // Show detailed results
-    let detailsHTML = "";
-    userAnswers.forEach((answer, index) => {
-        const resultClass = answer.isCorrect ? "correct" : "incorrect";
-        const status = answer.isCorrect ? "✓" : "✗";
-        
-        detailsHTML += `
-            <div class="result-item ${resultClass}">
-                <strong>Q${index + 1}:</strong> ${status} 
-                ${answer.isCorrect ? "Correct" : `Your answer: "${answer.userAnswer}" (Correct: "${answer.correctAnswer}")`}
-            </div>
-        `;
-    });
-    
-    resultsDetailsSpan.innerHTML = detailsHTML;
-}
-
-function restartQuiz() {
-    resultsScreen.classList.remove("active");
-    startScreen.classList.add("active");
-    
-    // Reset state
-    currentQuestionIndex = 0;
-    score = 0;
-    userAnswers = [];
-}
-
-// Load first question on page load (optional - user can click start)
+startButton.addEventListener('click', startQuiz);
+nextButton.addEventListener('click', goToNextQuestion);
+restartButton.addEventListener('click', startQuiz);
